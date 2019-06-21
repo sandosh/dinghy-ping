@@ -6,6 +6,8 @@ import asyncio
 import os
 import json
 import data
+import dinghy_dns
+import dns.rdatatype
 import socket
 import logging
 from urllib.parse import urlparse
@@ -215,6 +217,23 @@ def _get_all_pinged_urls():
 
     return p.get_all_pinged_urls()
 
+
+@api.route("/dinghy/form-input-dns-info")
+async def form_input_dns_info(req, resp):
+
+    url = urlparse(req.params['url'])
+
+    dns_info_A = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.A)
+    dns_info_NS = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.NS)
+    dns_info_MX = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.MX)
+
+    resp.content = api.template(
+            'dns_info.html',
+            domain=url,
+            dns_info_A=dns_info_A,
+            dns_info_NS=dns_info_NS,
+            dns_info_MX=dns_info_MX
+    )
 
 if __name__ == '__main__':
     start_http_server(8000)

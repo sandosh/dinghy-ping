@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dinghy Ping</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- styles -->
+  </head>
+  <body>
+    <br>
+    <div class="m-4 max-w-full rounded overflow-hidden shadow-lg border border-green-300 bg-gray-100">
+      <div class="px-6 py-4">
+        <h1 class="text-xl font-semibold hover:text-green-400"><a href="/" class="no-underline hover:underline">Dinghy Ping - dns</a></h1>
+        <br>
+        <div class="font-bold text-base mb-2">Domain: {{ domain }}</div>
+        <div class="font-bold text-base mb-2">A: {{ dns_info_A }}</div>
+        <div class="font-bold text-base mb-2">NS: {{ dns_info_NS }}</div>
+        <div class="font-bold text-base mb-2">MX: {{ dns_info_MX }}</div>
+      </div>
+    </div>
+  </body>
+</html>
