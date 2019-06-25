@@ -10,9 +10,9 @@ class DinghyDns:
         self.domain = domain
         self.rdata_type = rdata_type
 
-    def dns_query(self, domain=None, rdata_type=dns.rdatatype.A):
-        qname = dns.name.from_text(domain)
-        q = dns.message.make_query(qname, rdata_type)
-        response = dns.query.udp(q, '127.0.0.1')
+    def dns_query(self):
+        qname = dns.name.from_text(self.domain)
+        q = dns.message.make_query(qname, self.rdata_type)
+        response = dns.query.udp(q, '192.168.40.1')
         
         return response

@@ -221,18 +221,26 @@ def _get_all_pinged_urls():
 @api.route("/dinghy/form-input-dns-info")
 async def form_input_dns_info(req, resp):
 
-    url = urlparse(req.params['url'])
+    domain = req.params['domain']
+    
+    def gather_dns_A_info():
+        dns_info_A = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.A)
+        return dns_info_A.dns_query()
 
-    dns_info_A = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.A)
-    dns_info_NS = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.NS)
-    dns_info_MX = dinghy_dns.DinghyDns(domain = url.netloc, rdata_type=dns.rdatatype.MX)
+    def gather_dns_NS_info():
+        dns_info_NS = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.NS)
+        return dns_info_NS.dns_query()
+
+    def gather_dns_MX_info():
+        dns_info_MX = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.MX)
+        return dns_info_MX.dns_query()
 
     resp.content = api.template(
             'dns_info.html',
-            domain=url,
-            dns_info_A=dns_info_A,
-            dns_info_NS=dns_info_NS,
-            dns_info_MX=dns_info_MX
+            domain = domain,
+            dns_info_A=gather_dns_A_info(),
+            dns_info_NS=gather_dns_NS_info(),
+            dns_info_MX=gather_dns_MX_info()
     )
 
 if __name__ == '__main__':
