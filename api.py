@@ -173,6 +173,44 @@ async def form_input_tcp_connection_test(req, resp):
             connection_results = connection_info
         )
 
+
+@api.route("/dinghy/form-input-dns-info")
+async def form_input_dns_info(req, resp):
+    domain = req.params['domain']
+    
+    if 'nameserver' in req.params.keys():
+        nameserver = req.params['nameserver']
+    else:
+        nameserver = '127.0.0.1'
+   
+    dns_info_A=_gather_dns_A_info(domain, nameserver)
+    dns_info_NS=_gather_dns_NS_info(domain, nameserver)
+    dns_info_MX=_gather_dns_MX_info(domain, nameserver)
+
+    resp.content = api.template(
+            'dns_info.html',
+            domain = domain,
+            dns_info_A=dns_info_A,
+            dns_info_NS=dns_info_NS,
+            dns_info_MX=dns_info_MX
+    )
+
+
+def _gather_dns_A_info(domain, nameserver):
+    dns_info_A = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.A, nameserver=nameserver)
+    return dns_info_A.dns_query()
+
+
+def _gather_dns_NS_info(domain, nameserver):
+    dns_info_NS = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.NS, nameserver=nameserver)
+    return dns_info_NS.dns_query()
+
+
+def _gather_dns_MX_info(domain, nameserver):
+    dns_info_MX = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.MX, nameserver=nameserver)
+    return dns_info_MX.dns_query()
+
+
 @REQUEST_TIME.time()
 def _process_request(protocol, domain, params, headers):
     """
@@ -217,31 +255,6 @@ def _get_all_pinged_urls():
 
     return p.get_all_pinged_urls()
 
-
-@api.route("/dinghy/form-input-dns-info")
-async def form_input_dns_info(req, resp):
-
-    domain = req.params['domain']
-    
-    def gather_dns_A_info():
-        dns_info_A = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.A)
-        return dns_info_A.dns_query()
-
-    def gather_dns_NS_info():
-        dns_info_NS = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.NS)
-        return dns_info_NS.dns_query()
-
-    def gather_dns_MX_info():
-        dns_info_MX = dinghy_dns.DinghyDns(domain, rdata_type=dns.rdatatype.MX)
-        return dns_info_MX.dns_query()
-
-    resp.content = api.template(
-            'dns_info.html',
-            domain = domain,
-            dns_info_A=gather_dns_A_info(),
-            dns_info_NS=gather_dns_NS_info(),
-            dns_info_MX=gather_dns_MX_info()
-    )
 
 if __name__ == '__main__':
     start_http_server(8000)
